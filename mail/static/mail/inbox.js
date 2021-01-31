@@ -34,11 +34,8 @@ function load_mailbox(mailbox) {
     document.querySelector("#reply-email").style.display = 'none';
     document.querySelector('#folder-now').innerHTML = `<h3>${mailbox.charAt(0).toUpperCase() + mailbox.slice(1)}</h3>`;
 
-
     // Show the mailbox name
     getAllEmails(mailbox)
-
-
 }
 
 function readEmail(id) {
@@ -58,6 +55,7 @@ function readEmail(id) {
     const output = document.querySelector('#output')
     output.innerHTML = ""
     //Fetch new emails
+
     fetch(`/emails/${id}`)
         .then(response => response.json())
         .then(email => {
@@ -73,15 +71,13 @@ function readEmail(id) {
                 document.querySelector("#archive-button").style.display = 'none';
                 document.querySelector("#unarchive-button").style.display = 'block';
             }
-
-        }).then(() => {
-        fetch(`/emails/${id}`, {
-            method: 'PUT',
-            body: JSON.stringify({
-                read: true,
+            fetch(`/emails/${id}`, {
+                method: 'PUT',
+                body: JSON.stringify({
+                    read: true,
+                })
             })
-        })
-    }).catch(error => console.log(error));
+        }).catch(error => console.log(error));
 
     //Add or remove Archive button
     buttonArchive.addEventListener('click', () => {
@@ -109,25 +105,14 @@ function replyToEmail(id) {
                     document.querySelector('#reply-recipients').value = emailToReply.sender,
                     document.querySelector('#reply-subject').value = `Re: ${emailToReply.subject}`,
                     document.querySelector('#reply-body').value = `
-              "On" ${emailToReply.timestamp} , "Sender:" ${emailToReply.sender} "wrote:"
-              ${emailToReply.body}
-            `
+                      "On" ${emailToReply.timestamp} , "Sender:" ${emailToReply.sender} "wrote:"
+                      ${emailToReply.body}
+                    `
             }
         ).catch(error => console.log(error))
 
-    document.querySelector("#send-reply-button").addEventListener("click", ()=> {
-      fetch('/emails', {
-        method: 'POST',
-        body: JSON.stringify({
-          recipients: document.querySelector('#reply-recipients').value,
-          subject: document.querySelector('#reply-subject').value,
-          body: document.querySelector('#reply-body').value,
-          archived: false,
-        })
-      }).finally(() => {
-        $('.toast').toast('show');
-      }).catch(error => console.log(error))
-
+    document.querySelector("#send-reply-button").addEventListener("click", () =>{
+        replyEmail()
     })
 }
 
@@ -138,7 +123,6 @@ function getAllEmails(mailbox) {
     fetch(`/emails/${mailbox}`)
         .then(response => response.json())
         .then(emails => {
-
             if (emails.length > 0) {
                 for (let i = 0; i < emails.length; i++) {
                     if (emails[i].read == true) {
@@ -170,6 +154,19 @@ function getAllEmails(mailbox) {
             }
         });
 }
+function replyEmail(){
+    fetch('/emails', {
+        method: 'POST',
+        body: JSON.stringify({
+            recipients: document.querySelector('#reply-recipients').value,
+            subject: document.querySelector('#reply-subject').value,
+            body: document.querySelector('#reply-body').value,
+            read: false
+        })
+    }).finally(() => {
+        $('.toast').toast('show');
+    }).catch(error => console.log(error))
+}
 
 function sendEmail() {
     const message = document.querySelector("#message")
@@ -179,13 +176,14 @@ function sendEmail() {
             recipients: document.querySelector('#compose-recipients').value,
             subject: document.querySelector('#compose-subject').value,
             body: document.querySelector('#compose-body').value,
-            archived: false,
         })
     })
         .then(response => response.json())
         .then(result => {
             if (result.message) {
+                document.querySelector("#toast-body").innerHTML = `${result.message}`;
                 console.log(result.message)
+                $('.toast').toast('show');
             } else if (result.error) {
                 document.querySelector("#toast-body").innerHTML = `${result.error}`;
                 console.log(result.error)

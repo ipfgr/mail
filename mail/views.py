@@ -55,6 +55,7 @@ def compose(request):
     subject = data.get("subject", "")
     body = data.get("body", "")
 
+
     # Create one email for each recipient, plus sender
     users = set()
     users.add(request.user)
@@ -65,7 +66,7 @@ def compose(request):
             sender=request.user,
             subject=subject,
             body=body,
-            read=user == request.user
+
         )
         email.save()
         for recipient in recipients:
@@ -123,20 +124,11 @@ def email(request, email_id):
         email.save()
         return HttpResponse(status=204)
 
-    # Add code for delete emails
-    elif request.method == "DELETE":
-        data = json.loads(request.body)
-        if data.get["id"] is not None:
-            delete_ident = data["id"]
-        Email.objects.get(id=delete_ident).delete()
-        return HttpResponse(status=200)
-
     # Email must be via GET or PUT
     else:
         return JsonResponse({
             "error": "GET or PUT request required."
         }, status=400)
-
 
 def login_view(request):
     if request.method == "POST":
