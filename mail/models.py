@@ -23,7 +23,10 @@ class Email(models.Model):
             "recipients": [user.email for user in self.recipients.all()],
             "subject": self.subject,
             "body": self.body,
-            "timestamp": self.timestamp.strftime("%b %-d %Y, %-I:%M %p"),
+            "timestamp": self.timestamp.strftime("%b %d %Y, %I:%M %p"),
             "read": self.read,
             "archived": self.archived
         }
+
+    def __str__(self):
+        return 'User {} send email to {}'.format(self.sender, self.recipients.last())

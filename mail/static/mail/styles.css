@@ -1,3 +1,21 @@
 textarea {
     min-height: 400px;
 }
+
+.buttons{
+    display:flex !important;
+
+}
+
+#archive-button{
+    margin: 0px 5px;
+}
+#unarchive-button{
+    margin: 0px 5px;
+}
+
+
+.read{
+    background-color: rgba(175, 174, 174, 0.24);
+
+}

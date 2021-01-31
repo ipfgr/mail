@@ -21,6 +21,9 @@ def index(request):
         return HttpResponseRedirect(reverse("login"))
 
 
+def readmail(request):
+    pass
+
 @csrf_exempt
 @login_required
 def compose(request):
